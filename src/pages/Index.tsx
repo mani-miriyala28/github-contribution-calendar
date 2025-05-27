@@ -4,9 +4,8 @@ import { Card } from "../components/ui/card";
 
 const Index = () => {
   // Hardcode your GitHub username and token here
-  const username = "mani-miriyala28"; // Replace with your actual GitHub username
-  const token =
-    "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"; // Replace with your actual GitHub token
+  const username = ""; // Replace with your actual GitHub username
+  const token = ""; // Replace with your actual GitHub token
 
   return (
     <div className="container mx-auto p-4">
