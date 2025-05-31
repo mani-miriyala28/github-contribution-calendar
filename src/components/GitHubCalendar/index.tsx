@@ -83,7 +83,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   ],
   year,
   onYearChange,
-}) => {
+}): React.ReactElement => {
   // State variables
   const [contributions, setContributions] = useState<ContributionData[]>(
     data || []
@@ -431,174 +431,14 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   // Render loading state
   if (isLoading) {
     if (renderLoading) {
-      return renderLoading();
+      const loadingElement = renderLoading();
+      return React.isValidElement(loadingElement) ? (
+        loadingElement
+      ) : (
+        <div>Loading...</div>
+      );
     }
-
-    return (
-      <Card
-        className="p-6 animate-fadeIn max-w-full overflow-hidden"
-        style={{
-          backgroundColor: styles.background,
-          borderColor: styles.border,
-        }}
-      >
-        <div className="space-y-6">
-          {/* Header with year buttons */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-5 h-5" style={{ color: styles.text }} />
-              <h2
-                className="text-lg font-semibold hidden sm:inline"
-                style={{ color: styles.text }}
-              >
-                Contribution Calendar
-              </h2>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={
-                  (selectedButton === "lastYear"
-                    ? "default"
-                    : "outline") as ButtonVariant
-                }
-                size="sm"
-                onClick={() => {
-                  const range = getDateRange();
-                  handleYearChange(range.startDate, range.endDate);
-                  setSelectedButton("lastYear");
-                }}
-              >
-                Last Year
-              </Button>
-
-              {years.map((yearValue) => (
-                <Button
-                  key={yearValue}
-                  variant={
-                    (selectedButton === yearValue.toString()
-                      ? "default"
-                      : "outline") as ButtonVariant
-                  }
-                  size="sm"
-                  onClick={() => {
-                    handleYearChange(
-                      new Date(yearValue, 0, 1),
-                      new Date(yearValue, 11, 31)
-                    );
-                    setSelectedButton(yearValue.toString());
-                  }}
-                >
-                  {yearValue}
-                </Button>
-              ))}
-            </div>
-
-            <div>
-              <select
-                value={selectedTheme}
-                onChange={(e) => setSelectedTheme(e.target.value)}
-                className="border rounded p-1"
-                style={{
-                  borderColor: styles.border,
-                  color: styles.text,
-                  backgroundColor: styles.background,
-                }}
-              >
-                {Object.keys(allThemes).map((themeName) => (
-                  <option key={themeName} value={themeName}>
-                    {themeName.charAt(0).toUpperCase() + themeName.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Loading message */}
-          <div
-            className="text-center text-lg font-semibold"
-            style={{ color: styles.text }}
-          >
-            Loading contributions...
-          </div>
-
-          {/* Calendar grid skeleton */}
-          <div className="space-y-2">
-            <div className="flex">
-              {/* Weekday labels */}
-              {!hideWeekdayLabels && (
-                <div className="w-10 flex-shrink-0">
-                  <div className="h-5" /> {/* Spacer for month labels */}
-                  <div
-                    className="grid grid-rows-7 text-xs"
-                    style={{ color: styles.muted, gap: blockMargin }}
-                  >
-                    <div>Mon</div>
-                    <div>Tue</div>
-                    <div>Wed</div>
-                    <div>Thu</div>
-                    <div>Fri</div>
-                    <div>Sat</div>
-                    <div>Sun</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex-1 overflow-x-auto">
-                <div className="min-w-[900px]">
-                  {/* Month labels skeleton */}
-                  {!hideMonthLabels && (
-                    <div className="h-5 relative">
-                      {Array.from({ length: 12 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute text-xs animate-pulse"
-                          style={{
-                            left: `${(i / 12) * 100}%`,
-                            backgroundColor: styles.dayBackground,
-                            width: "20px",
-                            height: "12px",
-                            borderRadius: "2px",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Calendar cells skeleton */}
-                  <div
-                    className="grid grid-flow-col"
-                    style={{ gap: blockMargin }}
-                  >
-                    {Array.from({ length: 53 }).map((_, weekIndex) => (
-                      <div
-                        key={weekIndex}
-                        className="grid grid-rows-7"
-                        style={{ gap: blockMargin }}
-                      >
-                        {Array.from({ length: 7 }).map((_, dayIndex) => (
-                          <div
-                            key={`${weekIndex}-${dayIndex}`}
-                            style={{
-                              width: blockSize,
-                              height: blockSize,
-                              borderRadius: blockRadius,
-                              backgroundColor: styles.dayBackground,
-                              animation:
-                                "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-                            }}
-                          />
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-    );
+    return <div>Loading...</div>;
   }
 
   const weeks = getWeeks(selectedYear.startDate, selectedYear.endDate);
