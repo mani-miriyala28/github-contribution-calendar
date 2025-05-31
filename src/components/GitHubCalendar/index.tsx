@@ -145,6 +145,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
         } else {
           try {
             // Try to fetch real data with the provided token if available
+            console.log("Attempting to fetch data for username:", username);
             fetchedData = await fetchGitHubContributions(
               username,
               token || "", // Use token if provided, otherwise empty string
@@ -156,17 +157,24 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
 
             const githubError = error as GitHubError;
             console.log(
-              "GitHub API Error:",
-              githubError.response?.status,
+              "GitHub API Error Status:",
+              githubError.response?.status
+            );
+            console.log(
+              "GitHub API Error Message:",
               githubError.response?.message
             );
 
             // First check if username exists by making a separate API call
             try {
+              console.log("Checking if username exists:", username);
               const response = await fetch(
                 `https://api.github.com/users/${username}`
               );
+              console.log("Username check response status:", response.status);
+
               if (!response.ok) {
+                console.log("Username does not exist");
                 setError({
                   type: "invalid_username",
                   message: `GitHub user "${username}" does not exist. Please check the username and try again.`,
@@ -174,7 +182,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                 return;
               }
             } catch (userError) {
-              // If we can't even check the user, it's likely a network or API issue
+              console.error("Error checking username:", userError);
               setError({
                 type: "api_error",
                 message:
@@ -184,11 +192,12 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             }
 
             // If we get here, the username exists but we had an error fetching contributions
-            // This means it's likely a token issue
+            console.log("Username exists but error fetching contributions");
             if (
               githubError.response?.status === 401 ||
               githubError.response?.status === 403
             ) {
+              console.log("Token/access error detected");
               setError({
                 type: "invalid_token",
                 message: `Unable to access contribution data for "${username}". This could be because:
@@ -197,12 +206,14 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                   • The user's contribution data is private`,
               });
             } else if (githubError.response?.status === 429) {
+              console.log("Rate limit error detected");
               setError({
                 type: "api_error",
                 message:
                   "GitHub API rate limit exceeded. Please try again later.",
               });
             } else {
+              console.log("Generic API error");
               setError({
                 type: "api_error",
                 message:
@@ -354,6 +365,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
 
   // Render error state
   if (error.type) {
+    console.log("Rendering error state:", error);
     return (
       <Card
         className="p-6 animate-fadeIn max-w-full overflow-hidden"
