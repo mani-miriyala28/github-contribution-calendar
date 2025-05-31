@@ -86,19 +86,19 @@ Before using this component, you need to:
 
 ```bash
 # Using npm
-npm install github-contribution-calendar
+npm install react-gh-contribution-calendar
 
 # Using yarn
-yarn add github-contribution-calendar
+yarn add react-gh-contribution-calendar
 
 # Using pnpm
-pnpm add github-contribution-calendar
+pnpm add react-gh-contribution-calendar
 ```
 
 ## Basic Usage
 
 ```tsx
-import { GitHubCalendar } from "github-contribution-calendar";
+import { GitHubCalendar } from "react-gh-contribution-calendar";
 
 function App() {
   return (
@@ -113,7 +113,7 @@ function App() {
 ### Using Environment Variables
 
 ```tsx
-import { GitHubCalendar } from "github-contribution-calendar";
+import { GitHubCalendar } from "react-gh-contribution-calendar";
 
 function App() {
   return (
