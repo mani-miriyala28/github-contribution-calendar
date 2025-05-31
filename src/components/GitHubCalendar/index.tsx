@@ -409,11 +409,12 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
           </div>
 
           {/* Calendar grid skeleton */}
-          <div className="space-y-2 overflow-x-auto">
-            <div className="flex min-w-[1000px]">
+          <div className="space-y-2">
+            <div className="flex">
               {/* Weekday labels */}
               {!hideWeekdayLabels && (
-                <div className="w-10 pt-[22px]">
+                <div className="w-10 flex-shrink-0">
+                  <div className="h-5" /> {/* Spacer for month labels */}
                   <div
                     className="grid grid-rows-7 text-xs"
                     style={{ color: styles.muted, gap: blockMargin }}
@@ -429,52 +430,54 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                 </div>
               )}
 
-              <div className="flex-1">
-                {/* Month labels skeleton */}
-                {!hideMonthLabels && (
-                  <div className="h-5 relative">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute text-xs animate-pulse"
-                        style={{
-                          left: `${(i / 12) * 100}%`,
-                          backgroundColor: styles.dayBackground,
-                          width: "20px",
-                          height: "12px",
-                          borderRadius: "2px",
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {/* Calendar cells skeleton */}
-                <div
-                  className="grid grid-flow-col"
-                  style={{ gap: blockMargin }}
-                >
-                  {Array.from({ length: 53 }).map((_, weekIndex) => (
-                    <div
-                      key={weekIndex}
-                      className="grid grid-rows-7"
-                      style={{ gap: blockMargin }}
-                    >
-                      {Array.from({ length: 7 }).map((_, dayIndex) => (
+              <div className="flex-1 overflow-x-auto">
+                <div className="min-w-[900px]">
+                  {/* Month labels skeleton */}
+                  {!hideMonthLabels && (
+                    <div className="h-5 relative">
+                      {Array.from({ length: 12 }).map((_, i) => (
                         <div
-                          key={`${weekIndex}-${dayIndex}`}
+                          key={i}
+                          className="absolute text-xs animate-pulse"
                           style={{
-                            width: blockSize,
-                            height: blockSize,
-                            borderRadius: blockRadius,
+                            left: `${(i / 12) * 100}%`,
                             backgroundColor: styles.dayBackground,
-                            animation:
-                              "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                            width: "20px",
+                            height: "12px",
+                            borderRadius: "2px",
                           }}
                         />
                       ))}
                     </div>
-                  ))}
+                  )}
+
+                  {/* Calendar cells skeleton */}
+                  <div
+                    className="grid grid-flow-col"
+                    style={{ gap: blockMargin }}
+                  >
+                    {Array.from({ length: 53 }).map((_, weekIndex) => (
+                      <div
+                        key={weekIndex}
+                        className="grid grid-rows-7"
+                        style={{ gap: blockMargin }}
+                      >
+                        {Array.from({ length: 7 }).map((_, dayIndex) => (
+                          <div
+                            key={`${weekIndex}-${dayIndex}`}
+                            style={{
+                              width: blockSize,
+                              height: blockSize,
+                              borderRadius: blockRadius,
+                              backgroundColor: styles.dayBackground,
+                              animation:
+                                "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -572,79 +575,125 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
         )}
 
         {/* Calendar grid */}
-        <div className="space-y-2 overflow-x-auto">
-          <div className="flex min-w-[1000px]">
+        <div className="space-y-2">
+          <div className="flex">
             {/* Weekday labels */}
             {!hideWeekdayLabels && (
-              <div className="w-10 pt-[22px]">
+              <div className="w-10 flex-shrink-0">
+                <div className="h-5" /> {/* Spacer for month labels */}
                 <div
                   className="grid grid-rows-7 text-xs"
-                  style={{ color: styles.muted, gap: blockMargin }}
+                  style={{
+                    color: styles.muted,
+                    gap: blockMargin,
+                  }}
                 >
-                  <div>Mon</div>
-                  <div>Tue</div>
-                  <div>Wed</div>
-                  <div>Thu</div>
-                  <div>Fri</div>
-                  <div>Sat</div>
-                  <div>Sun</div>
+                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                    (day) => (
+                      <div
+                        key={day}
+                        style={{
+                          height: `${blockSize}px`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {day}
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
             )}
 
-            <div className="flex-1">
-              {/* Month labels */}
-              {!hideMonthLabels && (
-                <div className="h-5 relative">
-                  {months.map((month, i) => (
-                    <div
-                      key={i}
-                      className="absolute text-xs"
-                      style={{
-                        left: `${(month.index / weeks.length) * 100}%`,
-                        color: styles.muted,
-                      }}
-                    >
-                      {month.label}
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="flex-1 overflow-x-auto">
+              <div className="min-w-[900px]">
+                {/* Month labels */}
+                {!hideMonthLabels && (
+                  <div className="h-5 relative">
+                    {months.map((month, i) => (
+                      <div
+                        key={i}
+                        className="absolute text-xs"
+                        style={{
+                          left: `${(month.index / weeks.length) * 100}%`,
+                          color: styles.muted,
+                        }}
+                      >
+                        {month.label}
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Calendar cells */}
-              <div className="relative contribution-grid">
-                <div
-                  className="grid grid-flow-col"
-                  style={{ gap: blockMargin }}
-                >
-                  {weeks.map((week, weekIndex) => (
-                    <div
-                      key={weekIndex}
-                      className="grid grid-rows-7"
-                      style={{ gap: blockMargin }}
-                    >
-                      {getDaysInWeek(week).map((day, dayIndex) => {
-                        const dateStr = format(day, "yyyy-MM-dd");
-                        const contributionCount = getContributionForDate(
-                          contributions,
-                          day
-                        );
-                        const currentLevel =
-                          getContributionLevelName(contributionCount);
-                        const isLevelHighlighted =
-                          selectedLevel === currentLevel;
-                        const isCellHighlighted = selectedCell === dateStr;
-                        const shouldFade =
-                          (selectedLevel && !isLevelHighlighted) ||
-                          (selectedCell && !isCellHighlighted);
-                        const color = getContributionLevel(
-                          contributionCount,
-                          currentTheme
-                        );
+                {/* Calendar cells */}
+                <div className="relative contribution-grid">
+                  <div
+                    className="grid grid-flow-col"
+                    style={{ gap: blockMargin }}
+                  >
+                    {weeks.map((week, weekIndex) => (
+                      <div
+                        key={weekIndex}
+                        className="grid grid-rows-7"
+                        style={{ gap: blockMargin }}
+                      >
+                        {getDaysInWeek(week).map((day, dayIndex) => {
+                          const dateStr = format(day, "yyyy-MM-dd");
+                          const contributionCount = getContributionForDate(
+                            contributions,
+                            day
+                          );
+                          const currentLevel =
+                            getContributionLevelName(contributionCount);
+                          const isLevelHighlighted =
+                            selectedLevel === currentLevel;
+                          const isCellHighlighted = selectedCell === dateStr;
+                          const shouldFade =
+                            (selectedLevel && !isLevelHighlighted) ||
+                            (selectedCell && !isCellHighlighted);
+                          const color = getContributionLevel(
+                            contributionCount,
+                            currentTheme
+                          );
 
-                        if (renderDay) {
-                          const defaultCell = (
+                          if (renderDay) {
+                            const defaultCell = (
+                              <GitHubCalendarCell
+                                date={dateStr}
+                                day={day}
+                                count={contributionCount}
+                                blockSize={blockSize}
+                                blockRadius={blockRadius}
+                                isHighlighted={
+                                  isCellHighlighted || activeTooltip === dateStr
+                                }
+                                onClick={() =>
+                                  debouncedCalendarCellClick(
+                                    dateStr,
+                                    day,
+                                    contributionCount
+                                  )
+                                }
+                                onMouseEnter={() =>
+                                  throttledMouseEnter(dateStr)
+                                }
+                                onMouseLeave={throttledMouseLeave}
+                                color={color}
+                                shouldFade={shouldFade}
+                              />
+                            );
+
+                            return renderDay(
+                              { date: dateStr, count: contributionCount },
+                              defaultCell
+                            );
+                          }
+
+                          return (
                             <GitHubCalendarCell
+                              key={`${weekIndex}-${dayIndex}`}
                               date={dateStr}
                               day={day}
                               count={contributionCount}
@@ -666,40 +715,10 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                               shouldFade={shouldFade}
                             />
                           );
-
-                          return renderDay(
-                            { date: dateStr, count: contributionCount },
-                            defaultCell
-                          );
-                        }
-
-                        return (
-                          <GitHubCalendarCell
-                            key={`${weekIndex}-${dayIndex}`}
-                            date={dateStr}
-                            day={day}
-                            count={contributionCount}
-                            blockSize={blockSize}
-                            blockRadius={blockRadius}
-                            isHighlighted={
-                              isCellHighlighted || activeTooltip === dateStr
-                            }
-                            onClick={() =>
-                              debouncedCalendarCellClick(
-                                dateStr,
-                                day,
-                                contributionCount
-                              )
-                            }
-                            onMouseEnter={() => throttledMouseEnter(dateStr)}
-                            onMouseLeave={throttledMouseLeave}
-                            color={color}
-                            shouldFade={shouldFade}
-                          />
-                        );
-                      })}
-                    </div>
-                  ))}
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
