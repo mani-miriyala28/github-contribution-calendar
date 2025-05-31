@@ -33,6 +33,14 @@ import { lightThemes, darkThemes } from "./themes";
 
 const DEFAULT_THEME = "classic";
 
+interface GitHubError extends Error {
+  response?: {
+    status: number;
+    data?: Record<string, unknown>;
+    message?: string;
+  };
+}
+
 const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   // Data props
   username,
@@ -99,6 +107,10 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
     details: ContributionDetails | null;
     isLoading: boolean;
   } | null>(null);
+  const [error, setError] = useState<{
+    type: "invalid_username" | "invalid_token" | "api_error" | null;
+    message: string;
+  }>({ type: null, message: "" });
 
   // Get the appropriate theme colors based on color scheme
   const allThemes =
@@ -118,6 +130,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
     }
 
     setIsLoading(true);
+    setError({ type: null, message: "" });
     // Reset all selections when year changes
     setSelectedLevel(null);
     setSelectedCell(null);
@@ -138,14 +151,65 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
               selectedYear.startDate,
               selectedYear.endDate
             );
-          } catch (error) {
-            console.log("Error fetching GitHub data:", error);
-            console.log("Using sample data instead");
-            // Generate sample data if the API call fails
-            fetchedData = generateSampleData(
-              selectedYear.startDate,
-              selectedYear.endDate
+          } catch (error: unknown) {
+            console.error("Error fetching GitHub data:", error);
+
+            const githubError = error as GitHubError;
+            console.log(
+              "GitHub API Error:",
+              githubError.response?.status,
+              githubError.response?.message
             );
+
+            // First check if username exists by making a separate API call
+            try {
+              const response = await fetch(
+                `https://api.github.com/users/${username}`
+              );
+              if (!response.ok) {
+                setError({
+                  type: "invalid_username",
+                  message: `GitHub user "${username}" does not exist. Please check the username and try again.`,
+                });
+                return;
+              }
+            } catch (userError) {
+              // If we can't even check the user, it's likely a network or API issue
+              setError({
+                type: "api_error",
+                message:
+                  "Unable to verify GitHub username. Please check your internet connection and try again.",
+              });
+              return;
+            }
+
+            // If we get here, the username exists but we had an error fetching contributions
+            // This means it's likely a token issue
+            if (
+              githubError.response?.status === 401 ||
+              githubError.response?.status === 403
+            ) {
+              setError({
+                type: "invalid_token",
+                message: `Unable to access contribution data for "${username}". This could be because:
+                  • The token is invalid or expired
+                  • The token doesn't have access to this user's data
+                  • The user's contribution data is private`,
+              });
+            } else if (githubError.response?.status === 429) {
+              setError({
+                type: "api_error",
+                message:
+                  "GitHub API rate limit exceeded. Please try again later.",
+              });
+            } else {
+              setError({
+                type: "api_error",
+                message:
+                  "Failed to fetch contribution data. Please try again later.",
+              });
+            }
+            return;
           }
         }
 
@@ -156,12 +220,10 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
         setContributions(fetchedData);
       } catch (error) {
         console.error("Error fetching contributions:", error);
-        // Generate sample data if real data fetch fails
-        const sampleData = generateSampleData(
-          selectedYear.startDate,
-          selectedYear.endDate
-        );
-        setContributions(sampleData);
+        setError({
+          type: "api_error",
+          message: "An unexpected error occurred. Please try again later.",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -169,34 +231,6 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
 
     fetchContributionsData();
   }, [data, fetchData, selectedYear, transformData, username, token, year]);
-
-  // Generate sample contribution data if real data isn't available
-  const generateSampleData = (start: Date, end: Date): ContributionData[] => {
-    const weeks = getWeeks(start, end);
-    const sampleData: ContributionData[] = [];
-
-    weeks.forEach((week) => {
-      const days = getDaysInWeek(week);
-      days.forEach((day) => {
-        // Generate random contribution count (weighted to have more zeros and low numbers)
-        const rand = Math.random();
-        let count = 0;
-
-        if (rand > 0.65) count = 1;
-        if (rand > 0.85) count = 2;
-        if (rand > 0.92) count = 3;
-        if (rand > 0.96) count = 5;
-        if (rand > 0.985) count = 8;
-
-        sampleData.push({
-          date: format(day, "yyyy-MM-dd"),
-          count: count,
-        });
-      });
-    });
-
-    return sampleData;
-  };
 
   // Fetch details when a day is selected
   useEffect(() => {
@@ -317,6 +351,70 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
       debouncedCalendarCellClick.cancel();
     };
   }, [throttledMouseEnter, throttledMouseLeave, debouncedCalendarCellClick]);
+
+  // Render error state
+  if (error.type) {
+    return (
+      <Card
+        className="p-6 animate-fadeIn max-w-full overflow-hidden"
+        style={{
+          backgroundColor: styles.background,
+          borderColor: styles.border,
+        }}
+      >
+        <div className="space-y-6">
+          {/* Header with year buttons */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-5 h-5" style={{ color: styles.text }} />
+              <h2
+                className="text-lg font-semibold hidden sm:inline"
+                style={{ color: styles.text }}
+              >
+                Contribution Calendar
+              </h2>
+            </div>
+          </div>
+
+          {/* Error message */}
+          <div className="flex flex-col items-center justify-center py-8 space-y-4">
+            <div className="text-red-500 text-xl font-semibold">
+              {error.type === "invalid_username" && "User Not Found"}
+              {error.type === "invalid_token" && "Access Denied"}
+              {error.type === "api_error" && "Error"}
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-gray-600 dark:text-gray-400 whitespace-pre-line">
+                {error.message}
+              </p>
+              {error.type === "invalid_username" && (
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  Make sure the GitHub username is correct and the account is
+                  public.
+                </p>
+              )}
+              {error.type === "invalid_token" && (
+                <div className="text-sm text-gray-500 dark:text-gray-500 space-y-2">
+                  <p>To fix this, you can:</p>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>
+                      Create a new token in your GitHub settings under Developer
+                      Settings &gt; Personal Access Tokens
+                    </li>
+                    <li>
+                      Make sure the token has the necessary permissions (repo,
+                      read:user)
+                    </li>
+                    <li>Check if the token is still valid and not expired</li>
+                  </ol>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   // Render loading state
   if (isLoading) {
@@ -650,9 +748,10 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                           const isLevelHighlighted =
                             selectedLevel === currentLevel;
                           const isCellHighlighted = selectedCell === dateStr;
-                          const shouldFade =
+                          const shouldFade = Boolean(
                             (selectedLevel && !isLevelHighlighted) ||
-                            (selectedCell && !isCellHighlighted);
+                              (selectedCell && !isCellHighlighted)
+                          );
                           const color = getContributionLevel(
                             contributionCount,
                             currentTheme
