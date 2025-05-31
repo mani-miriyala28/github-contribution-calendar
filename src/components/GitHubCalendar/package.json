@@ -1,10 +1,17 @@
-
 {
-  "name": "react-github-contribution-calendar",
+  "name": "react-gh-contribution-calendar",
   "version": "1.0.0",
   "description": "A customizable GitHub contribution calendar component for React",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist",
     "README.md"
