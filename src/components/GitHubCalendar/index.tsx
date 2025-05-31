@@ -3,7 +3,7 @@ import { throttle, debounce } from "lodash";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 import { Card } from "../ui/card";
-import { Button } from "../ui/button";
+import { Button, type ButtonVariant } from "../ui/button";
 import GitHubCalendarCell from "./GitHubCalendarCell";
 import GitHubCalendarDetails from "./GitHubCalendarDetails";
 import GitHubCalendarLegend from "./GitHubCalendarLegend";
@@ -457,7 +457,11 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
 
             <div className="flex flex-wrap gap-2">
               <Button
-                variant={selectedButton === "lastYear" ? "default" : "outline"}
+                variant={
+                  (selectedButton === "lastYear"
+                    ? "default"
+                    : "outline") as ButtonVariant
+                }
                 size="sm"
                 onClick={() => {
                   const range = getDateRange();
@@ -472,9 +476,9 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                 <Button
                   key={yearValue}
                   variant={
-                    selectedButton === yearValue.toString()
+                    (selectedButton === yearValue.toString()
                       ? "default"
-                      : "outline"
+                      : "outline") as ButtonVariant
                   }
                   size="sm"
                   onClick={() => {
@@ -621,7 +625,11 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
 
           <div className="flex flex-wrap gap-2">
             <Button
-              variant={selectedButton === "lastYear" ? "default" : "outline"}
+              variant={
+                (selectedButton === "lastYear"
+                  ? "default"
+                  : "outline") as ButtonVariant
+              }
               size="sm"
               onClick={() => {
                 const range = getDateRange();
@@ -636,9 +644,9 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
               <Button
                 key={yearValue}
                 variant={
-                  selectedButton === yearValue.toString()
+                  (selectedButton === yearValue.toString()
                     ? "default"
-                    : "outline"
+                    : "outline") as ButtonVariant
                 }
                 size="sm"
                 onClick={() => {
