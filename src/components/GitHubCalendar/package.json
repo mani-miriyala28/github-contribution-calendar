@@ -1,0 +1,49 @@
+
+{
+  "name": "react-github-contribution-calendar",
+  "version": "1.0.0",
+  "description": "A customizable GitHub contribution calendar component for React",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "github",
+    "contributions",
+    "calendar",
+    "heatmap",
+    "activity",
+    "graph"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "dependencies": {
+    "date-fns": "^2.29.3",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.184",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "typescript": "^4.7.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/react-github-contribution-calendar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/react-github-contribution-calendar/issues"
+  },
+  "homepage": "https://github.com/yourusername/react-github-contribution-calendar#readme"
+}
