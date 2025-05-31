@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from "react";
 import { Card } from "./ui/card";
 import {
@@ -16,15 +15,21 @@ import {
   startOfMonth,
   addDays,
 } from "date-fns";
-import { Calendar, GitBranch, GitCommit, GitMerge, GitPullRequest } from "lucide-react";
+import {
+  Calendar,
+  GitBranch,
+  GitCommit,
+  GitMerge,
+  GitPullRequest,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import themes from "../utils/theme";
-import { 
-  fetchGitHubContributions, 
-  fetchContributionDetails, 
+import {
+  fetchGitHubContributions,
+  fetchContributionDetails,
   Contribution,
-  ContributionDetails 
+  ContributionDetails,
 } from "../utils/github";
 import ContributionCalendarHeader from "./ContributionCalendarHeader";
 import ContributionCalendarFooter from "./ContributionCalendarFooter";
@@ -69,7 +74,7 @@ const ContributionCalendar = ({ username, token }) => {
     setHighlightedCell(null);
     setPinnedTooltip(null);
     setSelectedDayDetails(null);
-    
+
     setTimeout(() => {
       fetchGitHubContributions(
         username,
@@ -87,25 +92,33 @@ const ContributionCalendar = ({ username, token }) => {
   useEffect(() => {
     if (selectedDayDetails && selectedDayDetails.isLoading) {
       fetchContributionDetails(username, token, selectedDayDetails.date)
-        .then(details => {
-          setSelectedDayDetails(prev => prev ? {
-            ...prev,
-            details,
-            isLoading: false
-          } : null);
+        .then((details) => {
+          setSelectedDayDetails((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  details,
+                  isLoading: false,
+                }
+              : null
+          );
         })
         .catch(() => {
-          setSelectedDayDetails(prev => prev ? {
-            ...prev,
-            details: {
-              commits: 0,
-              pullRequests: 0,
-              mergeRequests: 0,
-              pushes: 0,
-              branchesContributed: 0
-            },
-            isLoading: false
-          } : null);
+          setSelectedDayDetails((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  details: {
+                    commits: 0,
+                    pullRequests: 0,
+                    mergeRequests: 0,
+                    pushes: 0,
+                    branchesContributed: 0,
+                  },
+                  isLoading: false,
+                }
+              : null
+          );
         });
     }
   }, [selectedDayDetails, username, token]);
@@ -142,31 +155,32 @@ const ContributionCalendar = ({ username, token }) => {
   const getMonths = () => {
     const weeks = getWeeks();
     if (weeks.length === 0) return [];
-    
+
     // Find the first day of each month and its position
     const monthPositions = new Map();
-    
+
     // Iterate through all weeks and days
     weeks.forEach((week, weekIndex) => {
       const daysInWeek = getDaysInWeek(week);
-      
-      daysInWeek.forEach(day => {
+
+      daysInWeek.forEach((day) => {
         // If this is the first day of a month
         if (day.getDate() === 1) {
           const monthKey = day.getMonth();
           if (!monthPositions.has(monthKey)) {
             monthPositions.set(monthKey, {
               label: format(day, "MMM"),
-              position: weekIndex
+              position: weekIndex,
             });
           }
         }
       });
     });
-    
+
     // Convert to array and sort by position
-    return Array.from(monthPositions.values())
-      .sort((a, b) => a.position - b.position);
+    return Array.from(monthPositions.values()).sort(
+      (a, b) => a.position - b.position
+    );
   };
 
   const getContributionForDate = (date: Date) => {
@@ -183,7 +197,7 @@ const ContributionCalendar = ({ username, token }) => {
   const getDaysInWeek = (weekStart: Date) => {
     return eachDayOfInterval({
       start: weekStart,
-      end: addDays(weekStart, 6)
+      end: addDays(weekStart, 6),
     });
   };
 
@@ -310,7 +324,7 @@ const ContributionCalendar = ({ username, token }) => {
           formattedDate: format(day, "MMMM d, yyyy"),
           contributionCount: count,
           details: null,
-          isLoading: true
+          isLoading: true,
         });
       }
       setSelectedLevel(null);
@@ -348,23 +362,101 @@ const ContributionCalendar = ({ username, token }) => {
 
   if (isLoading) {
     return (
-      <Card className="p-6 w-full animate-fadeIn">
-        <div className="space-y-4">
-          <div className="h-4 bg-gray-200 rounded animate-pulse" />
-          <div className="grid grid-flow-col gap-1 overflow-x-auto">
-            {Array.from({ length: 53 }).map((_, weekIndex) => (
-              <div key={weekIndex} className="grid grid-rows-7 gap-1">
-                {Array.from({ length: 7 }).map((_, dayIndex) => (
-                  <div
-                    key={`${weekIndex}-${dayIndex}`}
-                    className="w-4 h-4 bg-gray-200 rounded-sm animate-pulse"
-                  />
+      <>
+        <ContributionCalendarHeader
+          username={username}
+          handleLogout={handleLogout}
+        />
+        <Card className="p-6 animate-fadeIn max-w-full overflow-hidden">
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold hidden sm:inline">
+                  Contribution Calendar
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={
+                    selectedButton === "lastYear" ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => {
+                    const today = new Date();
+                    const lastYear = subYears(today, 1);
+                    handleYearChange(lastYear, today);
+                    setSelectedButton("lastYear");
+                  }}
+                >
+                  Last Year
+                </Button>
+                {[2025, 2024, 2023, 2022].map((year) => (
+                  <Button
+                    key={year}
+                    variant={
+                      selectedButton === year.toString() ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => {
+                      handleYearChange(
+                        new Date(year, 0, 1),
+                        new Date(year, 11, 31)
+                      );
+                      setSelectedButton(year.toString());
+                    }}
+                  >
+                    {year}
+                  </Button>
                 ))}
               </div>
-            ))}
+              <select
+                value={selectedTheme}
+                onChange={(e) => setSelectedTheme(e.target.value)}
+                className="border rounded p-1"
+              >
+                {Object.keys(themes).map((theme) => (
+                  <option key={theme} value={theme}>
+                    {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="text-center text-lg font-semibold">
+              Loading contributions...
+            </div>
+            <div className="space-y-2 overflow-x-auto">
+              <div className="flex min-w-[1000px]">
+                <div className="w-16">
+                  <div className="h-5" />
+                  <div className="grid grid-rows-7 gap-1 text-xs text-neutral pt-3">
+                    <div>SUN</div>
+                    <div className="invisible">MON</div>
+                    <div>TUE</div>
+                    <div className="invisible">WED</div>
+                    <div>THU</div>
+                    <div className="invisible">FRI</div>
+                    <div>SAT</div>
+                  </div>
+                </div>
+                <div className="grid grid-flow-col gap-1">
+                  {Array.from({ length: 53 }).map((_, weekIndex) => (
+                    <div key={weekIndex} className="grid grid-rows-7 gap-1">
+                      {Array.from({ length: 7 }).map((_, dayIndex) => (
+                        <div
+                          key={`${weekIndex}-${dayIndex}`}
+                          className="w-4 h-4 bg-gray-200 rounded-sm animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+        <ContributionCalendarFooter />
+      </>
     );
   }
 
@@ -491,7 +583,11 @@ const ContributionCalendar = ({ username, token }) => {
                               >
                                 <TooltipTrigger
                                   onClick={() =>
-                                    debouncedCalendarCellClick(dateStr, day, contributionCount)
+                                    debouncedCalendarCellClick(
+                                      dateStr,
+                                      day,
+                                      contributionCount
+                                    )
                                   }
                                   onMouseEnter={() =>
                                     throttledMouseEnter(dateStr)
@@ -539,37 +635,53 @@ const ContributionCalendar = ({ username, token }) => {
           {/* Selected day contribution details */}
           {selectedDayDetails && (
             <div className="p-4 bg-accent rounded-md">
-              <h3 className="font-medium text-lg">{selectedDayDetails.formattedDate}</h3>
-              
+              <h3 className="font-medium text-lg">
+                {selectedDayDetails.formattedDate}
+              </h3>
+
               {selectedDayDetails.isLoading ? (
                 <div className="animate-pulse space-y-2 mt-2">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                   <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                 </div>
               ) : selectedDayDetails.contributionCount === 0 ? (
-                <p className="text-muted-foreground mt-1">No activity on this day</p>
+                <p className="text-muted-foreground mt-1">
+                  No activity on this day
+                </p>
               ) : (
                 <div className="space-y-2 mt-2">
                   <p className="font-medium">
-                    {selectedDayDetails.contributionCount} total contribution{selectedDayDetails.contributionCount !== 1 ? 's' : ''}
+                    {selectedDayDetails.contributionCount} total contribution
+                    {selectedDayDetails.contributionCount !== 1 ? "s" : ""}
                   </p>
-                  
+
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="flex items-center gap-2">
                       <GitCommit className="h-4 w-4" />
-                      <span>{selectedDayDetails.details?.commits || 0} commits</span>
+                      <span>
+                        {selectedDayDetails.details?.commits || 0} commits
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <GitPullRequest className="h-4 w-4" />
-                      <span>{selectedDayDetails.details?.pullRequests || 0} pull requests</span>
+                      <span>
+                        {selectedDayDetails.details?.pullRequests || 0} pull
+                        requests
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <GitMerge className="h-4 w-4" />
-                      <span>{selectedDayDetails.details?.mergeRequests || 0} merge requests</span>
+                      <span>
+                        {selectedDayDetails.details?.mergeRequests || 0} merge
+                        requests
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <GitBranch className="h-4 w-4" />
-                      <span>{selectedDayDetails.details?.branchesContributed || 0} branches</span>
+                      <span>
+                        {selectedDayDetails.details?.branchesContributed || 0}{" "}
+                        branches
+                      </span>
                     </div>
                   </div>
                 </div>

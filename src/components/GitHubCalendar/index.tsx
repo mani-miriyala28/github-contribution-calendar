@@ -7,25 +7,28 @@ import { Button } from "../ui/button";
 import GitHubCalendarCell from "./GitHubCalendarCell";
 import GitHubCalendarDetails from "./GitHubCalendarDetails";
 import GitHubCalendarLegend from "./GitHubCalendarLegend";
-import { 
-  GitHubCalendarProps, 
-  ContributionData, 
-  ContributionDetails, 
-  ThemeOption 
+import {
+  GitHubCalendarProps,
+  ContributionData,
+  ContributionDetails,
+  ThemeOption,
 } from "./types";
-import { 
-  getContributionLevel, 
-  getContributionLevelName, 
-  getDateRange, 
-  getWeeks, 
-  getDaysInWeek, 
-  getContributionForDate, 
-  getTotalContributions, 
+import {
+  getContributionLevel,
+  getContributionLevelName,
+  getDateRange,
+  getWeeks,
+  getDaysInWeek,
+  getContributionForDate,
+  getTotalContributions,
   getMonthLabels,
   getLastContributionDate,
-  getStylesByColorScheme
+  getStylesByColorScheme,
 } from "./utils";
-import { fetchGitHubContributions, fetchContributionDetails } from "../../utils/github";
+import {
+  fetchGitHubContributions,
+  fetchContributionDetails,
+} from "../../utils/github";
 import { lightThemes, darkThemes } from "./themes";
 
 const DEFAULT_THEME = "classic";
@@ -37,45 +40,54 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   data,
   transformData,
   fetchData,
-  
+
   // Appearance props
   blockMargin = 2,
   blockRadius = 2,
   blockSize = 12,
   fontSize = 14,
-  
+
   // Theme props
   theme = DEFAULT_THEME,
   customTheme,
   themes: customThemes,
   colorScheme = "light",
-  
+
   // Visibility props
   hideColorLegend = false,
   hideMonthLabels = false,
   hideWeekdayLabels = false,
   hideTotalCount = false,
-  
+
   // Event and render props
   loading: isLoadingProp,
   renderLoading,
   onDayClick,
   renderDay,
   renderDetails,
-  
+
   // Years
-  years = [new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() - 2, new Date().getFullYear() - 3],
+  years = [
+    new Date().getFullYear(),
+    new Date().getFullYear() - 1,
+    new Date().getFullYear() - 2,
+    new Date().getFullYear() - 3,
+  ],
   year,
-  onYearChange
+  onYearChange,
 }) => {
   // State variables
-  const [contributions, setContributions] = useState<ContributionData[]>(data || []);
+  const [contributions, setContributions] = useState<ContributionData[]>(
+    data || []
+  );
   const [isLoading, setIsLoading] = useState(isLoadingProp || !data);
   const [selectedYear, setSelectedYear] = useState<{
     startDate: Date;
     endDate: Date;
   }>(getDateRange(year));
-  const [selectedButton, setSelectedButton] = useState<string>(year ? year.toString() : "lastYear");
+  const [selectedButton, setSelectedButton] = useState<string>(
+    year ? year.toString() : "lastYear"
+  );
   const [selectedTheme, setSelectedTheme] = useState<string>(theme);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
@@ -89,8 +101,12 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   } | null>(null);
 
   // Get the appropriate theme colors based on color scheme
-  const allThemes = colorScheme === "dark" ? { ...darkThemes, ...customThemes } : { ...lightThemes, ...customThemes };
-  const currentTheme: ThemeOption = customTheme || allThemes[selectedTheme] || allThemes[DEFAULT_THEME];
+  const allThemes =
+    colorScheme === "dark"
+      ? { ...darkThemes, ...customThemes }
+      : { ...lightThemes, ...customThemes };
+  const currentTheme: ThemeOption =
+    customTheme || allThemes[selectedTheme] || allThemes[DEFAULT_THEME];
   const styles = getStylesByColorScheme(colorScheme);
 
   // Fetch contributions data
@@ -107,7 +123,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
     setSelectedCell(null);
     setActiveTooltip(null);
     setSelectedDayDetails(null);
-    
+
     const fetchContributionsData = async () => {
       try {
         let fetchedData;
@@ -126,19 +142,25 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             console.log("Error fetching GitHub data:", error);
             console.log("Using sample data instead");
             // Generate sample data if the API call fails
-            fetchedData = generateSampleData(selectedYear.startDate, selectedYear.endDate);
+            fetchedData = generateSampleData(
+              selectedYear.startDate,
+              selectedYear.endDate
+            );
           }
         }
-        
+
         if (transformData) {
           fetchedData = transformData(fetchedData);
         }
-        
+
         setContributions(fetchedData);
       } catch (error) {
         console.error("Error fetching contributions:", error);
         // Generate sample data if real data fetch fails
-        const sampleData = generateSampleData(selectedYear.startDate, selectedYear.endDate);
+        const sampleData = generateSampleData(
+          selectedYear.startDate,
+          selectedYear.endDate
+        );
         setContributions(sampleData);
       } finally {
         setIsLoading(false);
@@ -152,27 +174,27 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   const generateSampleData = (start: Date, end: Date): ContributionData[] => {
     const weeks = getWeeks(start, end);
     const sampleData: ContributionData[] = [];
-    
-    weeks.forEach(week => {
+
+    weeks.forEach((week) => {
       const days = getDaysInWeek(week);
-      days.forEach(day => {
+      days.forEach((day) => {
         // Generate random contribution count (weighted to have more zeros and low numbers)
         const rand = Math.random();
         let count = 0;
-        
+
         if (rand > 0.65) count = 1;
         if (rand > 0.85) count = 2;
         if (rand > 0.92) count = 3;
         if (rand > 0.96) count = 5;
         if (rand > 0.985) count = 8;
-        
+
         sampleData.push({
           date: format(day, "yyyy-MM-dd"),
-          count: count
+          count: count,
         });
       });
     });
-    
+
     return sampleData;
   };
 
@@ -181,29 +203,41 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
     if (selectedDayDetails && selectedDayDetails.isLoading) {
       const fetchDetails = async () => {
         try {
-          const details = await fetchContributionDetails(username, token || "", selectedDayDetails.date);
-          setSelectedDayDetails(prev => prev ? {
-            ...prev,
-            details,
-            isLoading: false
-          } : null);
+          const details = await fetchContributionDetails(
+            username,
+            token || "",
+            selectedDayDetails.date
+          );
+          setSelectedDayDetails((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  details,
+                  isLoading: false,
+                }
+              : null
+          );
         } catch (error) {
           console.error("Error fetching contribution details:", error);
           // Generate sample details if real data fetch fails
-          setSelectedDayDetails(prev => prev ? {
-            ...prev,
-            details: {
-              commits: Math.floor(Math.random() * 5),
-              pullRequests: Math.floor(Math.random() * 2),
-              mergeRequests: Math.floor(Math.random() * 2),
-              pushes: Math.floor(Math.random() * 3),
-              branchesContributed: Math.floor(Math.random() * 2)
-            },
-            isLoading: false
-          } : null);
+          setSelectedDayDetails((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  details: {
+                    commits: Math.floor(Math.random() * 5),
+                    pullRequests: Math.floor(Math.random() * 2),
+                    mergeRequests: Math.floor(Math.random() * 2),
+                    pushes: Math.floor(Math.random() * 3),
+                    branchesContributed: Math.floor(Math.random() * 2),
+                  },
+                  isLoading: false,
+                }
+              : null
+          );
         }
       };
-      
+
       fetchDetails();
     }
   }, [selectedDayDetails, username, token]);
@@ -257,7 +291,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
       } else {
         setSelectedCell(dateStr);
         setActiveTooltip(dateStr);
-        
+
         if (onDayClick) {
           onDayClick({ date: dateStr, count });
         } else {
@@ -266,7 +300,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             formattedDate: format(day, "MMMM d, yyyy"),
             contributionCount: count,
             details: null,
-            isLoading: true
+            isLoading: true,
           });
         }
       }
@@ -289,27 +323,161 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
     if (renderLoading) {
       return renderLoading();
     }
-    
+
     return (
-      <Card className="p-6 w-full animate-pulse" style={{ backgroundColor: styles.background, borderColor: styles.border }}>
-        <div className="space-y-4">
-          <div className="h-4 rounded" style={{ backgroundColor: styles.dayBackground }} />
-          <div className="grid grid-flow-col gap-1 overflow-x-auto" style={{ gap: blockMargin }}>
-            {Array.from({ length: 53 }).map((_, weekIndex) => (
-              <div key={weekIndex} className="grid grid-rows-7 gap-1" style={{ gap: blockMargin }}>
-                {Array.from({ length: 7 }).map((_, dayIndex) => (
-                  <div
-                    key={`${weekIndex}-${dayIndex}`}
-                    style={{
-                      width: blockSize,
-                      height: blockSize,
-                      borderRadius: blockRadius,
-                      backgroundColor: styles.dayBackground
-                    }}
-                  />
+      <Card
+        className="p-6 animate-fadeIn max-w-full overflow-hidden"
+        style={{
+          backgroundColor: styles.background,
+          borderColor: styles.border,
+        }}
+      >
+        <div className="space-y-6">
+          {/* Header with year buttons */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-5 h-5" style={{ color: styles.text }} />
+              <h2
+                className="text-lg font-semibold hidden sm:inline"
+                style={{ color: styles.text }}
+              >
+                Contribution Calendar
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={selectedButton === "lastYear" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  const range = getDateRange();
+                  handleYearChange(range.startDate, range.endDate);
+                  setSelectedButton("lastYear");
+                }}
+              >
+                Last Year
+              </Button>
+
+              {years.map((yearValue) => (
+                <Button
+                  key={yearValue}
+                  variant={
+                    selectedButton === yearValue.toString()
+                      ? "default"
+                      : "outline"
+                  }
+                  size="sm"
+                  onClick={() => {
+                    handleYearChange(
+                      new Date(yearValue, 0, 1),
+                      new Date(yearValue, 11, 31)
+                    );
+                    setSelectedButton(yearValue.toString());
+                  }}
+                >
+                  {yearValue}
+                </Button>
+              ))}
+            </div>
+
+            <div>
+              <select
+                value={selectedTheme}
+                onChange={(e) => setSelectedTheme(e.target.value)}
+                className="border rounded p-1"
+                style={{
+                  borderColor: styles.border,
+                  color: styles.text,
+                  backgroundColor: styles.background,
+                }}
+              >
+                {Object.keys(allThemes).map((themeName) => (
+                  <option key={themeName} value={themeName}>
+                    {themeName.charAt(0).toUpperCase() + themeName.slice(1)}
+                  </option>
                 ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Loading message */}
+          <div
+            className="text-center text-lg font-semibold"
+            style={{ color: styles.text }}
+          >
+            Loading contributions...
+          </div>
+
+          {/* Calendar grid skeleton */}
+          <div className="space-y-2 overflow-x-auto">
+            <div className="flex min-w-[1000px]">
+              {/* Weekday labels */}
+              {!hideWeekdayLabels && (
+                <div className="w-10 pt-[22px]">
+                  <div
+                    className="grid grid-rows-7 text-xs"
+                    style={{ color: styles.muted, gap: blockMargin }}
+                  >
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex-1">
+                {/* Month labels skeleton */}
+                {!hideMonthLabels && (
+                  <div className="h-5 relative">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute text-xs animate-pulse"
+                        style={{
+                          left: `${(i / 12) * 100}%`,
+                          backgroundColor: styles.dayBackground,
+                          width: "20px",
+                          height: "12px",
+                          borderRadius: "2px",
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Calendar cells skeleton */}
+                <div
+                  className="grid grid-flow-col"
+                  style={{ gap: blockMargin }}
+                >
+                  {Array.from({ length: 53 }).map((_, weekIndex) => (
+                    <div
+                      key={weekIndex}
+                      className="grid grid-rows-7"
+                      style={{ gap: blockMargin }}
+                    >
+                      {Array.from({ length: 7 }).map((_, dayIndex) => (
+                        <div
+                          key={`${weekIndex}-${dayIndex}`}
+                          style={{
+                            width: blockSize,
+                            height: blockSize,
+                            borderRadius: blockRadius,
+                            backgroundColor: styles.dayBackground,
+                            animation:
+                              "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </Card>
@@ -321,17 +489,23 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
   const totalContributions = getTotalContributions(contributions);
 
   return (
-    <Card className="p-6 animate-fadeIn max-w-full overflow-hidden" style={{ backgroundColor: styles.background, borderColor: styles.border }}>
+    <Card
+      className="p-6 animate-fadeIn max-w-full overflow-hidden"
+      style={{ backgroundColor: styles.background, borderColor: styles.border }}
+    >
       <div className="space-y-6">
         {/* Header with year buttons */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
             <Calendar className="w-5 h-5" style={{ color: styles.text }} />
-            <h2 className="text-lg font-semibold hidden sm:inline" style={{ color: styles.text }}>
+            <h2
+              className="text-lg font-semibold hidden sm:inline"
+              style={{ color: styles.text }}
+            >
               Contribution Calendar
             </h2>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             <Button
               variant={selectedButton === "lastYear" ? "default" : "outline"}
@@ -344,11 +518,15 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             >
               Last Year
             </Button>
-            
+
             {years.map((yearValue) => (
               <Button
                 key={yearValue}
-                variant={selectedButton === yearValue.toString() ? "default" : "outline"}
+                variant={
+                  selectedButton === yearValue.toString()
+                    ? "default"
+                    : "outline"
+                }
                 size="sm"
                 onClick={() => {
                   handleYearChange(
@@ -362,13 +540,17 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
               </Button>
             ))}
           </div>
-          
+
           <div>
             <select
               value={selectedTheme}
               onChange={(e) => setSelectedTheme(e.target.value)}
               className="border rounded p-1"
-              style={{ borderColor: styles.border, color: styles.text, backgroundColor: styles.background }}
+              style={{
+                borderColor: styles.border,
+                color: styles.text,
+                backgroundColor: styles.background,
+              }}
             >
               {Object.keys(allThemes).map((themeName) => (
                 <option key={themeName} value={themeName}>
@@ -378,21 +560,27 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             </select>
           </div>
         </div>
-        
+
         {/* Total contributions count */}
         {!hideTotalCount && (
-          <div className="text-center text-lg font-semibold" style={{ color: styles.text }}>
+          <div
+            className="text-center text-lg font-semibold"
+            style={{ color: styles.text }}
+          >
             {totalContributions} contributions in {selectedButton}
           </div>
         )}
-        
+
         {/* Calendar grid */}
         <div className="space-y-2 overflow-x-auto">
           <div className="flex min-w-[1000px]">
             {/* Weekday labels */}
             {!hideWeekdayLabels && (
               <div className="w-10 pt-[22px]">
-                <div className="grid grid-rows-7 text-xs" style={{ color: styles.muted, gap: blockMargin }}>
+                <div
+                  className="grid grid-rows-7 text-xs"
+                  style={{ color: styles.muted, gap: blockMargin }}
+                >
                   <div>Mon</div>
                   <div>Tue</div>
                   <div>Wed</div>
@@ -403,7 +591,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                 </div>
               </div>
             )}
-            
+
             <div className="flex-1">
               {/* Month labels */}
               {!hideMonthLabels && (
@@ -414,7 +602,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                       className="absolute text-xs"
                       style={{
                         left: `${(month.index / weeks.length) * 100}%`,
-                        color: styles.muted
+                        color: styles.muted,
                       }}
                     >
                       {month.label}
@@ -422,21 +610,38 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                   ))}
                 </div>
               )}
-              
+
               {/* Calendar cells */}
               <div className="relative contribution-grid">
-                <div className="grid grid-flow-col" style={{ gap: blockMargin }}>
+                <div
+                  className="grid grid-flow-col"
+                  style={{ gap: blockMargin }}
+                >
                   {weeks.map((week, weekIndex) => (
-                    <div key={weekIndex} className="grid grid-rows-7" style={{ gap: blockMargin }}>
+                    <div
+                      key={weekIndex}
+                      className="grid grid-rows-7"
+                      style={{ gap: blockMargin }}
+                    >
                       {getDaysInWeek(week).map((day, dayIndex) => {
                         const dateStr = format(day, "yyyy-MM-dd");
-                        const contributionCount = getContributionForDate(contributions, day);
-                        const currentLevel = getContributionLevelName(contributionCount);
-                        const isLevelHighlighted = selectedLevel === currentLevel;
+                        const contributionCount = getContributionForDate(
+                          contributions,
+                          day
+                        );
+                        const currentLevel =
+                          getContributionLevelName(contributionCount);
+                        const isLevelHighlighted =
+                          selectedLevel === currentLevel;
                         const isCellHighlighted = selectedCell === dateStr;
-                        const shouldFade = (selectedLevel && !isLevelHighlighted) || (selectedCell && !isCellHighlighted);
-                        const color = getContributionLevel(contributionCount, currentTheme);
-                        
+                        const shouldFade =
+                          (selectedLevel && !isLevelHighlighted) ||
+                          (selectedCell && !isCellHighlighted);
+                        const color = getContributionLevel(
+                          contributionCount,
+                          currentTheme
+                        );
+
                         if (renderDay) {
                           const defaultCell = (
                             <GitHubCalendarCell
@@ -445,18 +650,29 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                               count={contributionCount}
                               blockSize={blockSize}
                               blockRadius={blockRadius}
-                              isHighlighted={isCellHighlighted || activeTooltip === dateStr}
-                              onClick={() => debouncedCalendarCellClick(dateStr, day, contributionCount)}
+                              isHighlighted={
+                                isCellHighlighted || activeTooltip === dateStr
+                              }
+                              onClick={() =>
+                                debouncedCalendarCellClick(
+                                  dateStr,
+                                  day,
+                                  contributionCount
+                                )
+                              }
                               onMouseEnter={() => throttledMouseEnter(dateStr)}
                               onMouseLeave={throttledMouseLeave}
                               color={color}
                               shouldFade={shouldFade}
                             />
                           );
-                          
-                          return renderDay({ date: dateStr, count: contributionCount }, defaultCell);
+
+                          return renderDay(
+                            { date: dateStr, count: contributionCount },
+                            defaultCell
+                          );
                         }
-                        
+
                         return (
                           <GitHubCalendarCell
                             key={`${weekIndex}-${dayIndex}`}
@@ -465,8 +681,16 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
                             count={contributionCount}
                             blockSize={blockSize}
                             blockRadius={blockRadius}
-                            isHighlighted={isCellHighlighted || activeTooltip === dateStr}
-                            onClick={() => debouncedCalendarCellClick(dateStr, day, contributionCount)}
+                            isHighlighted={
+                              isCellHighlighted || activeTooltip === dateStr
+                            }
+                            onClick={() =>
+                              debouncedCalendarCellClick(
+                                dateStr,
+                                day,
+                                contributionCount
+                              )
+                            }
                             onMouseEnter={() => throttledMouseEnter(dateStr)}
                             onMouseLeave={throttledMouseLeave}
                             color={color}
@@ -481,7 +705,7 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Selected day details */}
         {selectedDayDetails && !renderDetails && (
           <GitHubCalendarDetails
@@ -494,18 +718,22 @@ const GitHubCalendar: React.FC<GitHubCalendarProps> = ({
             colorScheme={colorScheme}
           />
         )}
-        
+
         {/* Custom details renderer */}
-        {selectedDayDetails && renderDetails && selectedDayDetails.details && (
-          renderDetails(selectedDayDetails.details, selectedDayDetails.date)
-        )}
-        
+        {selectedDayDetails &&
+          renderDetails &&
+          selectedDayDetails.details &&
+          renderDetails(selectedDayDetails.details, selectedDayDetails.date)}
+
         {/* Footer with last contribution and legend */}
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="text-center text-sm" style={{ color: styles.muted, fontSize: `${fontSize}px` }}>
+          <div
+            className="text-center text-sm"
+            style={{ color: styles.muted, fontSize: `${fontSize}px` }}
+          >
             Last contributed on: {getLastContributionDate(contributions)}
           </div>
-          
+
           {!hideColorLegend && (
             <GitHubCalendarLegend
               theme={currentTheme}
