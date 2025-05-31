@@ -6,8 +6,6 @@ A beautiful and customizable GitHub contribution calendar component built with R
 
 ![Classic Theme](src/assets/Classic.png)
 
-![Dark Theme](src/assets/Dark.png)
-
 # Nature Theme
 
 ![Nature Theme](src/assets/Nature.png)
@@ -47,6 +45,10 @@ A beautiful and customizable GitHub contribution calendar component built with R
 # Aurora Theme
 
 ![Aurora Theme](src/assets/Aurora.png)
+
+## Dark Mode
+
+![Dark Theme](src/assets/Dark.png)
 
 ## Features
 
@@ -136,6 +138,114 @@ function App() {
 />
 ```
 
+### Creating Custom Themes
+
+You can create your own custom themes by providing a theme object with the following structure:
+
+```tsx
+const myCustomTheme = {
+  background: "#ffffff", // Calendar background color
+  text: "#24292e", // Text color
+  grade4: "#216e39", // Highest contribution level
+  grade3: "#30a14e", // High contribution level
+  grade2: "#40c463", // Medium contribution level
+  grade1: "#9be9a8", // Low contribution level
+  grade0: "#ebedf0", // No contributions
+  border: "#e1e4e8", // Border color
+  dayBackground: "#f6f8fa", // Day cell background
+  muted: "#6e7781", // Muted text color
+};
+
+// Using custom theme
+<GitHubCalendar
+  username="your-github-username"
+  token="your-github-token"
+  customTheme={myCustomTheme}
+/>;
+```
+
+#### Multiple Custom Themes
+
+You can also provide multiple custom themes:
+
+```tsx
+const myThemes = {
+  ocean: {
+    background: "#f0f8ff",
+    text: "#1a365d",
+    grade4: "#003f5c",
+    grade3: "#2f4b7c",
+    grade2: "#665191",
+    grade1: "#a05195",
+    grade0: "#d45087",
+    border: "#e2e8f0",
+    dayBackground: "#f7fafc",
+    muted: "#4a5568",
+  },
+  sunset: {
+    background: "#fff5f5",
+    text: "#2d3748",
+    grade4: "#c53030",
+    grade3: "#e53e3e",
+    grade2: "#f56565",
+    grade1: "#fc8181",
+    grade0: "#fed7d7",
+    border: "#e2e8f0",
+    dayBackground: "#fffaf0",
+    muted: "#718096",
+  },
+};
+
+// Using custom themes
+<GitHubCalendar
+  username="your-github-username"
+  token="your-github-token"
+  themes={myThemes}
+  theme="ocean" // or "sunset"
+/>;
+```
+
+#### Dark Mode Support
+
+For dark mode support, you can provide different colors for light and dark schemes:
+
+```tsx
+const myTheme = {
+  light: {
+    background: "#ffffff",
+    text: "#24292e",
+    grade4: "#216e39",
+    grade3: "#30a14e",
+    grade2: "#40c463",
+    grade1: "#9be9a8",
+    grade0: "#ebedf0",
+    border: "#e1e4e8",
+    dayBackground: "#f6f8fa",
+    muted: "#6e7781",
+  },
+  dark: {
+    background: "#0d1117",
+    text: "#c9d1d9",
+    grade4: "#39d353",
+    grade3: "#26a641",
+    grade2: "#2ea043",
+    grade1: "#238636",
+    grade0: "#161b22",
+    border: "#30363d",
+    dayBackground: "#161b22",
+    muted: "#8b949e",
+  },
+};
+
+// Using theme with dark mode support
+<GitHubCalendar
+  username="your-github-username"
+  token="your-github-token"
+  customTheme={myTheme}
+  colorScheme="dark" // or "light"
+/>;
+```
+
 ### Custom Appearance
 
 ```tsx
@@ -220,15 +330,6 @@ function App() {
 | year              | number             | -                            | Default selected year                   |
 | onYearChange      | function           | -                            | Year change handler                     |
 
-## Error Handling
-
-The component provides clear error messages for various scenarios:
-
-- Invalid username: When the provided GitHub username doesn't exist
-- Invalid token: When the token is invalid, expired, or doesn't have required permissions
-- API rate limiting: When GitHub API rate limit is exceeded
-- Network errors: When there are connectivity issues
-
 ## Security Best Practices
 
 1. **Token Security**:
@@ -249,11 +350,3 @@ The component provides clear error messages for various scenarios:
    - Set up environment variables in your hosting platform
    - Use secure methods to inject tokens in production
    - Consider using a backend proxy for API calls
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT © [Your Name]
