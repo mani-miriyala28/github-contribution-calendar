@@ -2,17 +2,50 @@
 
 A beautiful and customizable GitHub contribution calendar component built with React, TypeScript, and Tailwind CSS. This component allows you to display GitHub contribution data in a visually appealing calendar format with various themes and customization options.
 
+# Classic Theme
+
 ![Classic Theme](src/assets/Classic.png)
+
 ![Dark Theme](src/assets/Dark.png)
+
+# Nature Theme
+
 ![Nature Theme](src/assets/Nature.png)
+
+# Winter Theme
+
 ![Winter Theme](src/assets/Winter.png)
+
+# Halloween Theme
+
 ![Halloween Theme](src/assets/Halloween.png)
+
+# Monotune Theme
+
 ![Monotune Theme](src/assets/Monotune.png)
+
+# Pastel Theme
+
 ![Pastel Theme](src/assets/Pastel.png)
+
+# Galaxy Theme
+
 ![Galaxy Theme](src/assets/Galaxy.png)
+
+# Prism Theme
+
 ![Prism Theme](src/assets/Prism.png)
+
+# Solar Theme
+
 ![Solar Theme](src/assets/Solar.png)
+
+# Velvet Theme
+
 ![Velvet Theme](src/assets/Velvet.png)
+
+# Aurora Theme
+
 ![Aurora Theme](src/assets/Aurora.png)
 
 ## Features
