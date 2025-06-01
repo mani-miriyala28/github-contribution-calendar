@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+import dts from "vite-plugin-dts";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,7 +9,7 @@ export default defineConfig({
     host: "::",
     port: 8080,
   },
-  plugins: [react()],
+  plugins: [react(), dts({ include: ["src"] })],
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
@@ -18,8 +19,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       name: "ReactGitHubContributionCalendar",
-      fileName: "index",
-      formats: ["es", "umd"],
+      fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
+      formats: ["es", "cjs"],
     },
     rollupOptions: {
       external: ["react", "react-dom"],
@@ -30,5 +31,7 @@ export default defineConfig({
         },
       },
     },
+    sourcemap: true,
+    minify: true,
   },
 });
