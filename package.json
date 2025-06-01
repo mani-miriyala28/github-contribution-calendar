@@ -3,7 +3,7 @@
   "private": false,
   "version": "1.2.2",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -36,7 +36,6 @@
     "date-fns": "^3.3.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.344.0",
-    "react-gh-contribution-calendar": "file:react-gh-contribution-calendar-1.2.0.tgz",
     "react-router-dom": "^6.22.0",
     "tailwind-merge": "^3.3.0"
   },
@@ -47,7 +46,6 @@
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "@vitejs/plugin-react": "^4.2.1",
-    "@vitejs/plugin-react-swc": "^3.10.0",
     "autoprefixer": "^10.4.18",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
