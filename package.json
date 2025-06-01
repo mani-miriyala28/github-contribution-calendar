@@ -1,24 +1,36 @@
 {
   "name": "react-gh-contribution-calendar",
   "private": false,
-  "version": "1.1.2",
+  "version": "1.2.0",
   "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@tanstack/react-query": "^5.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.3.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.344.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-gh-contribution-calendar": "file:react-gh-contribution-calendar-1.2.0.tgz",
+    "react-router-dom": "^6.22.0",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
@@ -37,5 +49,23 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"
-  }
+  },
+  "keywords": [
+    "react",
+    "github",
+    "contribution",
+    "calendar",
+    "component",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/react-gh-contribution-calendar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/react-gh-contribution-calendar/issues"
+  },
+  "homepage": "https://github.com/yourusername/react-gh-contribution-calendar#readme"
 }
