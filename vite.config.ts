@@ -17,6 +17,11 @@ export default defineConfig({
     react(),
     dts({
       include: ["src"],
+      // Ensure the plugin uses the app tsconfig (which only includes `src`) so
+      // unrelated root JS config files aren't picked up.
+      tsconfigPath: resolve(__dirname, "tsconfig.app.json"),
+      // Also explicitly exclude ESLint config by absolute path and glob as a fallback.
+      exclude: [resolve(__dirname, "eslint.config.js"), "**/eslint.config.js"],
       rollupTypes: true,
     }),
   ],
